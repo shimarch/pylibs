@@ -1,0 +1,36 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-toml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: debug-statements
+
+  - repo: local
+    hooks:
+      - id: black
+        name: black
+        entry: uv run python -m black
+        language: system
+        args: [--line-length=120]
+        types: [python]
+      - id: ruff
+        name: ruff
+        entry: uv run python -m ruff
+        language: system
+        args: [check, --fix, --exit-non-zero-on-fix]
+        types: [python]
+      - id: pyright
+        name: pyright
+        entry: uv run python -m pyright
+        language: system
+        types: [python]
+        require_serial: false
+        exclude: '^tests/'
