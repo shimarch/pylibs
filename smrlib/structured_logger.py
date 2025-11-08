@@ -42,26 +42,13 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from colorama import Fore, Style
+from colorama import init as colorama_init
+
 if TYPE_CHECKING:
     pass
 
-try:
-    from colorama import Fore, Style
-    from colorama import init as colorama_init
-
-    colorama_init(autoreset=True)
-    _colorama_available = True
-except ImportError:  # pragma: no cover - fallback when colorama is unavailable
-    _colorama_available = False
-
-    class _DummyFore:
-        BLACK = RED = GREEN = YELLOW = BLUE = MAGENTA = CYAN = WHITE = ""
-
-    class _DummyStyle:
-        RESET_ALL = ""
-
-    Fore = _DummyFore()  # type: ignore[assignment]
-    Style = _DummyStyle()  # type: ignore[assignment]
+colorama_init(autoreset=True)
 
 
 @dataclass(slots=True)
@@ -425,17 +412,17 @@ class StructuredLogger:
         if console:
             match log_item.level:
                 case LogLevel.SUCCESS:
-                    self._output_console(log_item, "✅", Fore.GREEN if _colorama_available else "")
+                    self._output_console(log_item, "✅", Fore.GREEN)
                 case LogLevel.NOTICE:
                     self._output_console(log_item, "ℹ️", "")
                 case LogLevel.ERROR:
-                    self._output_console(log_item, "❌", Fore.RED if _colorama_available else "")
+                    self._output_console(log_item, "❌", Fore.RED)
                 case LogLevel.WARNING:
-                    self._output_console(log_item, "⚠️", Fore.YELLOW if _colorama_available else "")
+                    self._output_console(log_item, "⚠️", Fore.YELLOW)
                 case LogLevel.INFO:
                     self._output_console(log_item, "", "")
                 case LogLevel.DEBUG:
-                    self._output_console(log_item, "🛠️", Fore.BLUE if _colorama_available else "")
+                    self._output_console(log_item, "🛠️", Fore.BLUE)
 
         if self.config.log_file:
             message = self._add_prefix(log_item.format_file())
@@ -479,8 +466,7 @@ class StructuredLogger:
 
         if self._message_prefix:
             message = f"{self._message_prefix}{message}"
-        reset = Style.RESET_ALL if _colorama_available else ""
-        print(f"{color}{emoji} {message}{reset}")
+        print(f"{color}{emoji} {message}{Style.RESET_ALL}")
 
     def _add_prefix(self, message: str) -> str:
         """ドライラン用プレフィックスを追加"""
@@ -682,6 +668,15 @@ class LoggerContext:
             True if logger is initialized, False otherwise
         """
         return cls._logger is not None
+
+    @classmethod
+    def reset(cls) -> None:
+        """Reset the logger instance.
+
+        This method clears the current logger instance, allowing it to be reinitialized.
+        Useful for testing or when you need to reconfigure the logger.
+        """
+        cls._logger = None
 
 
 class StructuredError(Exception):
