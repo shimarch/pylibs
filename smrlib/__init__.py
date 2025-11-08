@@ -4,7 +4,7 @@ Documentation: https://github.com/shimarch/pylibs/blob/main/README.md
 """
 
 from smrlib.google_chat_client import GoogleChatClient
-from smrlib.google_sheet_client import GoogleSheetsClient
+from smrlib.google_sheets_client import GoogleSheetsClient
 from smrlib.secret_core import SecretCore, SecretStorageType
 from smrlib.structured_logger import LogConfig, LoggerContext, StructuredLogger
 
