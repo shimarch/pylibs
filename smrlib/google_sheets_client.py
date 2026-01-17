@@ -240,10 +240,9 @@ class GoogleSheetsClient:
             try:
                 worksheet = spreadsheet.worksheet(sheet_name)
             except gspread.exceptions.WorksheetNotFound:
-                # auto create if not exists? For now, let's respect the existing behavior and fail
-                # or we could create it. The user said "repaint", implying it exists.
-                # Let's fail if not found, consistent with get_worksheet_data error mapping.
-                raise
+                # シートが存在しない場合は作成
+                self.logger.info(f"Worksheet '{sheet_name}' not found. Creating new worksheet.")
+                worksheet = spreadsheet.add_worksheet(title=sheet_name, rows=1000, cols=26)
 
             # Transform list of dicts to list of lists
             headers = list(data[0].keys())
