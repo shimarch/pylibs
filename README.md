@@ -4,7 +4,13 @@ Personal utility library for Python projects.
 
 ## Table of Contents
 
+- [Table of Contents](#table-of-contents)
 - [Installation](#installation)
+  - [Using uv](#using-uv)
+  - [Using pip](#using-pip)
+- [Update](#update)
+  - [Using uv](#using-uv-1)
+  - [Using pip](#using-pip-1)
 - [Modules](#modules)
 - [API Reference](#api-reference)
   - [structured_logger](#structured_logger)
@@ -22,6 +28,23 @@ uv add git+https://github.com/shimarch/pylibs.git
 
 ```bash
 pip install git+https://github.com/shimarch/pylibs.git
+```
+
+## Update
+
+### Using uv
+
+Git dependencies are heavily cached by `uv`. Use the following commands to ensure you get the latest version:
+
+```bash
+uv cache clean
+uv sync
+```
+
+### Using pip
+
+```bash
+pip install --upgrade git+https://github.com/shimarch/pylibs.git
 ```
 
 ## Modules
@@ -42,20 +65,17 @@ Global singleton context for managing the application logger.
 **Methods:**
 
 - `initialize(logger: StructuredLogger | None = None) -> StructuredLogger`
-
   - Initialize the global logger
   - Args:
     - `logger`: Optional logger instance. If None, creates a default logger.
   - Returns: The initialized logger instance
 
 - `get_logger() -> StructuredLogger`
-
   - Get the logger instance
   - Returns: The logger instance
   - Raises: `RuntimeError` if logger is not initialized
 
 - `is_initialized() -> bool`
-
   - Check if logger is initialized
   - Returns: True if logger is initialized, False otherwise
 
