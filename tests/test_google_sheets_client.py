@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from smrlib.google_sheet_client import GoogleSheetsClient
+from smrlib.google_sheets_client import GoogleSheetsClient
 from smrlib.secret_core import SecretCore
 from smrlib.structured_logger import LoggerContext, StructuredLogger
 
