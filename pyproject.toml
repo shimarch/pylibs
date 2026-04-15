@@ -2,6 +2,9 @@
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.uv]
+exclude-newer = "7 days"
+
 [project]
 name = "smrlib"
 version = "0.1.4"
@@ -16,6 +19,7 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "httplib2>=0.22.0",
     "requests>=2.32.5",
+    "tabulate>=0.9",
 ]
 
 [project.urls]

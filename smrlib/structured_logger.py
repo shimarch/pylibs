@@ -44,6 +44,7 @@ from typing import TYPE_CHECKING, Any
 
 from colorama import Fore, Style
 from colorama import init as colorama_init
+from tabulate import tabulate
 
 if TYPE_CHECKING:
     pass
@@ -592,6 +593,75 @@ class StructuredLogger:
         log_data = {label: data["value"] for label, data in items.items()}
         log_item = LogItem.info(title, log_data)
         self._log(log_item, console=False)
+
+    def table(
+        self,
+        rows: list[list[Any]] | list[dict[str, Any]],
+        *,
+        headers: list[str] | str = "keys",
+        fmt: str = "simple",
+        title: str | None = None,
+        log_max_rows: int = 10,
+    ) -> None:
+        """テーブルデータをコンソールに整形出力し、ログファイルにも記録する。
+
+        コンソールには tabulate で整形表示。
+        ログファイルにはTSV形式で1行ずつ記録（機械可読性優先）。
+
+        summary() との使い分け:
+            - summary(): 処理結果の集計サマリ（少数行、色付き、固定構造）
+            - table():   任意データの一覧表示（可変行数、自由構造）
+
+        Args:
+            rows: 行データ。list[list] または list[dict] 形式。
+            headers: ヘッダ行。list[str] で明示指定、または "keys"(dict用) / "firstrow"。
+            fmt: tabulate フォーマット。
+                 "simple" (デフォルト), "plain", "pipe" (Markdown), "grid" 等。
+            title: オプションのタイトル。指定時はテーブル上部に表示。
+            log_max_rows: ログファイルに記録する最大行数（デフォルト10）。
+
+        Example:
+            logger.table(
+                [{"Name": "太公望の釣竿", "Storage": "Safe", "Count": 1}],
+                fmt="simple",
+                title="検索結果",
+            )
+        """
+        if not rows:
+            return
+
+        table_str = tabulate(rows, headers=headers, tablefmt=fmt)
+
+        if title:
+            print(f"\n  {title}")
+        print(table_str)
+
+        # ログファイルにTSV形式で記録
+        if self.config.log_file:
+            # ヘッダ解決
+            if isinstance(rows[0], dict):
+                header_list = list(rows[0].keys())
+                row_values = [list(r.values()) for r in rows]  # type: ignore[union-attr]
+            else:
+                header_list = headers if isinstance(headers, list) else []
+                row_values = rows  # type: ignore[assignment]
+
+            sep = "\t"
+            prefix = f"{title}, " if title else ""
+            header_line = sep.join(str(h) for h in header_list) if header_list else ""
+
+            log_rows = row_values[:log_max_rows]
+            for row in log_rows:
+                row_line = sep.join(str(v) for v in row)
+                log_line = f"{prefix}{header_line}: {row_line}" if header_line else f"{prefix}{row_line}"
+                log_item = LogItem.info(log_line)
+                self._log(log_item, console=False)
+
+            if len(row_values) > log_max_rows:
+                log_item = LogItem.info(
+                    f"{prefix}... and {len(row_values) - log_max_rows} more rows (total: {len(row_values)})"
+                )
+                self._log(log_item, console=False)
 
 
 def detect_log_config(argv: Iterable[str] | None = None) -> LogConfig:
