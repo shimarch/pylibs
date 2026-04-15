@@ -633,7 +633,7 @@ class StructuredLogger:
         table_str = tabulate(rows, headers=headers, tablefmt=fmt)
 
         if title:
-            print(f"\n📋{title}")
+            print(f"\n📋  {title}")
         print(table_str)
 
         # ログファイルにTSV形式で記録
