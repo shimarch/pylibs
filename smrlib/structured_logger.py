@@ -622,7 +622,7 @@ class StructuredLogger:
 
         Example:
             logger.table(
-                [{"Name": "太公望の釣竿", "Storage": "Safe", "Count": 1}],
+                [{"Name": "A", "Item": "B", "Count": 1}],
                 fmt="simple",
                 title="検索結果",
             )
